@@ -5,9 +5,9 @@ import * as Tone from 'tone'
 import { PolySynth } from 'tone';
 
 let generativeModes = new p5( p => {
-  let masterVolume = -9; // in decibel.
+  let masterVolume = -9; 
   let ready = false;
-  let wave; // this object allows us to draw waveforms
+  let wave;
   let synth;
   let loop;
   let scale;
@@ -117,11 +117,9 @@ let generativeModes = new p5( p => {
     synth.volume.value = -8.1
     harmony.volume.value = -14.1
      
-    // note that the first parameter to Loop() is an anonymous function,
-    // ie a function defined "on the fly"
     loop = new Tone.Loop( (time) => {  
       let n = p.noise(p.frameCount * .01);
-      let i = p.floor(p.map(n, 0, 1, 0, scale.length)); // floor rounds down
+      let i = p.floor(p.map(n, 0, 1, 0, scale.length)); 
       let note = scale[i];
       if (prevNote != note) {
         // (freq, noteDuration, time)
@@ -180,7 +178,6 @@ let generativeModes = new p5( p => {
   }
   
   //------------------------------------------------------------
-  // On window resize, update the canvas size
   p.windowResized = () => {
     p.resizeCanvas(p.windowWidth, p.windowHeight);
   }
