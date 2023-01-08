@@ -57,80 +57,48 @@
       // p.createCanvas(p.windowWidth, p.windowHeight);
       p.createCanvas(650, 300);
 
-      let row = []
-      // Should create n number of columns
-      for (let x = 0; x < 16; x++) {
-        // Should create n number of rows
-        for (let y = 0; y < 7; y++){
-          // Assign an index to each row
-          row[y] = y
-          // Assing an index to each column
-          divid = x % 16
-        
-          /**
-           * create a div for each cell
-           * ** assign col and row id to each cell
-           * ** move position coordinates for draw function
-           * ** style the cell-div
-           * ** add cell-div to array of rows
-           */
-          const div = p.createDiv()
-          div.id(`col_${divid}_row-${y}`)
-          div.position(x*40, y*40)
-          div.elt.style.background = "black"
-          div.elt.style.height = "40px"
-          div.elt.style.width = "40px"
-          div.elt.style.border = "1px solid gray"
-
-          // TODO: WHAT IS THIS DOING
-          // NOTHIGN CURRENTLY 
-          rows.push(div)
-
-          /**
-           * set note to selected cell
-           * each row has a note
-           * each col decides the beat the note is played
-           * 
-          */
-
-          /** 
-           * Assign note from the current scale
-           * ** each row should have unique note
-           * ** each cell should have note corresponding to its row
-           */
-          for(let x = 0; x < scale.length; x++) {
-            let rowNote = scale[x]
-            if(row[x] === x) {
-              cell[x] = rowNote
-            }
-          }
-          
-          /**
-           * Cell of grid should interact with mouse
-           * ** get noted of selected cell
-           * ** assign note to array of selected notes
-           * ** assign class to cell on selection
-           * ** de-assign class from cell on deselection
-           * ** style cell on selection/deselection
-           * ** play note
-           */
-          div.mousePressed((e) => {
-            getSelectedNote(div)
-            selectedNotesArray.push(selectedNote)
-            toggleStyle(div)
-            playNote(div)
-          })
-
-        }
-      }
+      drawSequencer()
        
     }
 
-    function getSelectedNote(div) {
-      // parse row from divid
+    //------------------------------------------------------------
+    p.windowResized = () => {
+      p.resizeCanvas(p.windowWidth, p.windowHeight);
+    }
+    
+    //------------------------------------------------------------
+    p.draw = () => {
+      // p.background(220);
+      // p.background(0);
+    
+      if (ready) {
+        // drawModes()
+        // drawSequencer()
+        // drawWaveform(wave);
+      } 
+      // else {
+      //   p.fill(255);
+      //   p.noStroke();
+      //   p.textAlign(p.CENTER, p.CENTER);
+      //   p.text("CLICK TO START", p.width / 2, p.height / 2);
+      // }
+    }
+
+    //------------------------------------------------------------
+    p.mousePressed = () => {
+      if (!ready) {
+        ready = true;  
+        initalizeAudio();
+      }
+      // else {
+      //   ready = false;
+      //   Tone.Transport.stop();
+      // }
+    }
+
+    function setSelectedNote(div) {
       let rowid = div.id()
       let parsedRow = rowid.split('-')[1]
-      // selected note
       selectedNote = cell[parsedRow]
     }
 
@@ -144,9 +112,7 @@
       }
     }
 
-    let newtime2
     function repeat(time) {
-      newtime2 = time
       let y = 0
         rows.forEach((row, index) => {
           // console.log('each row', row.class(), index)
@@ -159,7 +125,7 @@
           }
         })
     }
-    //------------------------------------------------------------
+
     function initalizeAudio() {
       buildChords()
   
@@ -242,11 +208,6 @@
       synth.volume.value = -8.1
       harmony.volume.value = -14.1
 
-      // Tone.Transport.scheduleRepeat(repeat, "1n", newtime2, "24m")
-      
-
-      // console.log('rows[]',rows)
-
       loop = new Tone.Loop( (time) => {  
         let n = p.noise(p.frameCount * .01);
         let i = p.floor(p.map(n, 0, 1, 0, scale.length)); 
@@ -315,65 +276,76 @@
     function modulo(n, m) {
       return ((n % m) + m) % m;
     }
-    
-    //------------------------------------------------------------
-    p.windowResized = () => {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
-    }
-    let count = 0
-    
-    //------------------------------------------------------------
-    // Main render loop
-    p.draw = () => {
-      // p.clear();
-      // p.background(220);
-
-      
-
-      // draw chords and scale of mode as each one plays
-      // goal is to hear the sounds of each mode, so simply seeing the above works
-
-      // p.background(0);
-      // p.stroke(100)
-      
-    
-      if (ready) {
-      
-      
-        count++
-        // drawModes()
-        // drawSequencer()
-        // drawWaveform(wave);
-      } 
-      // else {
-      //   p.fill(255);
-      //   p.noStroke();
-      //   p.textAlign(p.CENTER, p.CENTER);
-      //   p.text("CLICK TO START", p.width / 2, p.height / 2);
-      // }
-    }
-    
-    //------------------------------------------------------------
-    function drawModes() {
-      // text notes
-      // text chords
-      p.text(note, 100 + count, 100)
-    }
 
     function drawSequencer() {
-      // row each scale note
-      // column = choose number of measures 
-      // for(let i = 0; i < scale.length; i++) {
-      //   console.log('scale note', i, scale[i])
-      //   // p.rect(10,10,10,10)
-      // }
+      let row = []
+      // Should create n number of columns
+      for (let x = 0; x < 16; x++) {
+        // Should create n number of rows
+        for (let y = 0; y < 7; y++){
+          // Assign an index to each row
+          row[y] = y
+          // Assing an index to each column
+          divid = x % 16
+        
+          /**
+           * create a div for each cell
+           * ** assign col and row id to each cell
+           * ** move position coordinates for draw function
+           * ** style the cell-div
+           * ** add cell-div to array of rows
+           */
+          const div = p.createDiv()
+          div.id(`col_${divid}_row-${y}`)
+          div.position(x*40, y*40)
+          div.elt.style.background = "black"
+          div.elt.style.height = "40px"
+          div.elt.style.width = "40px"
+          div.elt.style.border = "1px solid gray"
 
-      // for(let i = 0; i <= 16; i += 50) {
+          // TODO: WHAT IS THIS DOING
+          // NOTHIGN CURRENTLY 
+          rows.push(div)
 
-      // }
+          /**
+           * set note to selected cell
+           * each row has a note
+           * each col decides the beat the note is played
+           * 
+          */
+
+          /** 
+           * Assign note from the current scale
+           * ** each row should have unique note
+           * ** each cell should have note corresponding to its row
+           */
+          for(let x = 0; x < scale.length; x++) {
+            let rowNote = scale[x]
+            if(row[x] === x) {
+              cell[x] = rowNote
+            }
+          }
+          
+          /**
+           * Cell of grid should interact with mouse
+           * ** get noted of selected cell
+           * ** assign note to array of selected notes
+           * ** assign class to cell on selection
+           * ** de-assign class from cell on deselection
+           * ** style cell on selection/deselection
+           * ** play note
+           */
+          div.mousePressed((e) => {
+            setSelectedNote(div)
+            selectedNotesArray.push(selectedNote)
+            toggleStyle(div)
+            playNoteOnSelection(div)
+          })
+
+        }
+      }
     }
     
-    //------------------------------------------------------------
     function drawWaveform(wave, w = p.width, h = p.height) {
       p.stroke(255);
       let buffer = wave.getValue(0);
@@ -410,48 +382,25 @@
       }
     }
     
-    let newtime
-    function playNote(div) {
+    function playNoteOnSelection(div) {
       // Tone.start()
       // Tone.Transport.start()
       console.log('div class', div.class())
+      synth.triggerAttackRelease(selectedNote, "8n")
       
-      Tone.Transport.schedule((time) => {
-        newtime = time
+      // Tone.Transport.schedule((time) => {
+      //   newtime = time
 
-        synth.triggerAttackRelease(selectedNote, "8n", time)
-      }, Tone.now())
+      //   synth.triggerAttackRelease(selectedNote, "8n", time)
+      // }, Tone.now())
     }
-    //------------------------------------------------------------
-    p.mousePressed = () => {
-      if (!ready) {
-        ready = true;  
-        initalizeAudio();
-        // if mouseX range 0-40 and mouseY 0-40 
-        if(p.mouseX >= 0 && p.mouseX <= 40) {
-          console.log('mouse', p.mouseX, p.mouseY)
-          // create var to assign note to 
-          // fill 
-          p.stroke(100)
-          p.fill(100, 0,1)
-          // playNote()
-        }
-      }
-      else {
-        // ready = false;
-        // Tone.Transport.stop();
-      }
-    }
+    
     
   }, 'one');
 
 </script>
 
 <div id="one"></div>
-<!-- 
-    draw grid
-    access from .js
- -->
 
 <style>
   
